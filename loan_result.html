@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Loan Result</title>
+  <link rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      background-color: #121212;
+      color: #fff;
+    }
+    .result-box {
+      background-color: #1e1e1e;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 0 15px rgba(0, 123, 255, 0.3);
+    }
+    .result-box h2 {
+      color: #ffc107;
+    }
+    .data-section p {
+      font-size: 1.1rem;
+      margin: 0.5rem 0;
+    }
+    .chart-section {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    canvas {
+      max-width: 100%;
+    }
+    .btn-group {
+      margin-top: 30px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container mt-5">
+  <div class="result-box">
+    <h2 class="text-center mb-4">📊 Car Loan Breakdown</h2>
+
+    <div class="row">
+      <!-- 🧾 Text Details -->
+      <div class="col-md-6 data-section">
+        <p><strong>Loan Amount:</strong> ₹{{ loan_amount }}</p>
+        <p><strong>Monthly EMI:</strong> ₹{{ emi }}</p>
+        <p><strong>Total Interest:</strong> ₹{{ total_interest }}</p>
+        <p><strong>Total Payment:</strong> ₹{{ total_payment }}</p>
+      </div>
+
+
+      <div style="max-width: 300px; margin: auto;">
+        <canvas id="loanDonutChart"></canvas>
+      </div>
+
+    <!-- 🔁 Buttons -->
+    <div class="text-center btn-group">
+      <a href="/loan" class="btn btn-outline-light">🔁 Calculate Again</a>
+      <a href="/" class="btn btn-outline-info ml-2">🏠 Back to Home</a>
+    </div>
+  </div>
+</div>
+
+<!-- Chart Script -->
+<script>
+  const loanAmount = {{ loan_amount }};
+  const totalInterest = {{ total_interest }};
+  const totalRepayment = {{ total_payment }};
+
+  new Chart(document.getElementById("loanDonutChart"), {
+    type: 'doughnut',
+    data: {
+      labels: ['Loan Amount', 'Interest'],
+      datasets: [{
+        data: [loanAmount, totalInterest],
+        backgroundColor: ['#007bff', '#f39c12'],  // blue & golden orange
+        borderWidth: 2,
+        hoverOffset: 8
+      }]
+    },
+    options: {
+      cutout: '65%',
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            color: '#fff',
+            font: {
+              size: 14
+            }
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              return `${ctx.label}: ₹${ctx.raw.toLocaleString()}`;
+            }
+          }
+        }
+      }
+    }
+  });
+</script>
+</div>
+</body>
+</html>

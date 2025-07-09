@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Feedback</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 40px;
+    }
+    form {
+      background-color: #222;
+      padding: 30px;
+      border-radius: 10px;
+      max-width: 500px;
+      margin: auto;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      margin: 15px 0;
+      background-color: #333;
+      border: none;
+      border-radius: 5px;
+      color: white;
+    }
+    button {
+      background-color: red;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: darkred;
+    }
+
+    .feedback-list {
+      max-width: 700px;
+      margin: 60px auto 0;
+      background-color: #1a1a1a;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    .feedback-item {
+      border-bottom: 1px solid #333;
+      padding: 15px 0;
+    }
+
+    .feedback-item:last-child {
+      border-bottom: none;
+    }
+
+    .star {
+      color: gold;
+    }
+  </style>
+</head>
+<body>
+  <h2 style="text-align:center; margin-bottom:30px;">📝 We’d love your feedback!</h2>
+
+    {% if success %}
+  <p style="text-align:center; color:lightgreen; font-weight:bold; margin-bottom:20px;">
+    ✅ Feedback sent successfully!
+  </p>
+{% endif %}
+
+  <!-- Feedback Form -->
+  <form method="POST" action="/submit-feedback">
+    <label>Your Name:</label>
+    <input type="text" name="name" required>
+
+    <label>Rating:</label>
+    <select name="rating" required>
+      <option value="5">⭐⭐⭐⭐⭐ - Excellent</option>
+      <option value="4">⭐⭐⭐⭐ - Good</option>
+      <option value="3">⭐⭐⭐ - Average</option>
+      <option value="2">⭐⭐ - Poor</option>
+      <option value="1">⭐ - Bad</option>
+    </select>
+
+    <label>Your Feedback:</label>
+    <textarea name="feedback" rows="5" required></textarea>
+
+    <button type="submit">Submit Feedback</button>
+  </form>
+
+  <!-- Previous Feedback Display -->
+  <div class="feedback-list">
+    <h3 style="text-align:center; color:#ff4444;">⭐ What Others Say</h3>
+    {% if feedbacks %}
+      {% for fb in feedbacks %}
+        <div class="feedback-item">
+          <strong>{{ fb.name }}</strong><br>
+          <span class="star">{{ '★' * fb.rating }}</span>
+          <p>{{ fb.message }}</p>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p style="text-align:center;">No feedback yet. Be the first to leave a review!</p>
+    {% endif %}
+  </div>
+</body>
+</html>

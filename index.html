@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Car Price Predictor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" crossorigin="anonymous">
+
+  <style>
+    /* Sidebar Styles */
+    #menuToggle {
+      font-size: 28px;
+      cursor: pointer;
+      color: white;
+      padding: 10px;
+    }
+
+    .sidebar {
+      height: 100%;
+      width: 250px;
+      position: fixed;
+      left: -250px;
+      top: 0;
+      background-color: #111;
+      overflow-x: hidden;
+      transition: 0.3s;
+      padding-top: 60px;
+      z-index: 1000;
+    }
+
+    .sidebar.open {
+      left: 0;
+    }
+
+    .sidebar .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      font-size: 30px;
+      cursor: pointer;
+      color: white;
+    }
+
+    .sidebar-section {
+      padding: 10px 20px;
+    }
+
+    .sidebar .section-header {
+      color: #ffcc00;
+      cursor: pointer;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .sidebar .section-content {
+      display: none;
+      color: #ccc;
+      font-size: 14px;
+    }
+
+    /* FAQ Styling */
+    .faq-wrapper {
+      background-color: #1c1e22;
+      border-radius: 10px;
+    }
+
+    .faq-question {
+      background-color: #333;
+      cursor: pointer;
+      color: #fff;
+    }
+
+    .faq-answer {
+      background-color: #222;
+      color: #bbb;
+    }
+  </style>
+</head>
+
+<body class="bg-dark text-light">
+
+<!-- Hamburger Toggle Button -->
+<div id="menuToggle" onclick="toggleSidebar()">☰</div>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <span class="close-btn" onclick="toggleSidebar()">×</span>
+
+  <div class="sidebar-section">
+   <div class="section-header">
+  <a href="{{ url_for('loan') }}" style="color:white; text-decoration:none;">🚗 Car Loan Details</a>
+</div>
+  </div>
+
+
+  <div class="sidebar-section">
+    <div class="section-header">
+      <a href="{{ url_for('feedback') }}" style="color:white; text-decoration:none;">💬 Feedback</a>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+  <div class="section-header" onclick="toggleCollapse('about')">ℹ️ About</div>
+  <div class="section-content" id="about" style="display: none;">
+    <p>
+  This project is a <strong>Car Price Prediction System</strong> powered by <span style="color:#ffc107;">Machine Learning</span>.
+  It helps users estimate the resale value of a used car based on:
+</p>
+<ul>
+  <li>Brand & Model</li>
+  <li>Year of Purchase</li>
+  <li>Kilometers Driven</li>
+  <li>Fuel Type</li>
+</ul>
+<p>
+  Alongside car price prediction, it also includes a <strong>Car Loan Estimator</strong> that calculates monthly EMI, total interest, and repayment amount — presented in both <strong>text</strong> and <strong>visual (donut chart)</strong> formats.
+</p>
+<p>
+  Built using <strong>Python</strong>, <strong>Flask</strong>, <strong>HTML/CSS</strong>, and <strong>Chart.js</strong>.
+</p>
+<p>
+  Developed by <em>Yash Vardhan Lawaniya</em> & <em>Shiv Kumar</em> — students of <strong>NGF College of Engineering and Technology</strong>.
+</p>
+
+  </div>
+</div>
+
+<script>
+  function toggleCollapse(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.style.display = (section.style.display === "block") ? "none" : "block";
+    }
+  }
+</script>
+
+
+  <div class="sidebar-section">
+    <div class="section-header" onclick="toggleCollapse('contact')">☎️ Contact Us</div>
+    <div class="section-content" id="contact">
+      <p>Email: yashlawaniya1616@gmial.com<br>Phone: 9485515551</p>
+    </div>
+  </div>
+</div>
+
+<!-- Title and Description -->
+<div class="container my-5">
+  <div class="text-center mb-4">
+    <h1 class="text-danger font-weight-bold">Car Price Prediction Using Machine Learning</h1>
+    <p class="text-light mt-3" style="font-size: 1.1rem; max-width: 800px; margin: auto;">
+      This project utilizes powerful machine learning models to predict the resale price of used cars.
+      By entering basic details like brand, model, year, kilometers driven, and fuel type,
+      the system calculates a reliable price estimate to help you buy or sell confidently.
+    </p>
+  </div>
+
+  <!-- Prediction Form -->
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-lg">
+        <div class="card-header text-center">
+          <h2 class="text-info">🚗 Car Price Predictor</h2>
+        </div>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          {{ messages[0] }}
+          <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <div class="card-body">
+          <p class="text-center text-danger font-weight-bold" style="font-size: 1.1rem;">
+            Fill in the details below and let CarBot predict your vehicle's selling price.
+          </p>
+
+          <form method="post" action="/predict" name="Modelform">
+            <div class="form-group">
+              <label for="company" style="color: #ff4c4c;">Select the company</label>
+              <select class="form-control" id="company" name="company" onchange="load_car_models(this.id,'car_models')" required>
+                {% for company in companies %}
+                <option value="{{ company }}">{{ company }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="car_models" style="color: #ff4c4c;">Select the model</label>
+              <select class="form-control" id="car_models" name="car_models" required></select>
+            </div>
+
+            <div class="form-group">
+              <label for="year" style="color: #ff4c4c;">Select year of purchase</label>
+              <select class="form-control" id="year" name="year" required>
+                {% for year in years %}
+                <option value="{{ year }}">{{ year }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="fuel_type" style="color: #ff4c4c;">Select fuel type</label>
+              <select class="form-control" id="fuel_type" name="fuel_type" required>
+                {% for fuel in fuel_types %}
+                <option value="{{ fuel }}">{{ fuel }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="kmsSlider" style="color: #ff4c4c;">KMs Driven: <span id="kmsValue">0</span> km</label>
+              <input type="range" class="form-control-range" id="kmsSlider" name="kilo_driven" min="0" max="300000" step="1000" value="0" oninput="updateKmsValue(this.value)">
+            </div>
+
+            <div class="form-group text-center">
+              <button type="submit" class="btn btn-info px-4">Predict Price</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="card-footer text-center">
+          <a href="/add_car" class="btn btn-outline-success btn-sm">➕ Add Car</a>
+          <a href="/delete_car" class="btn btn-outline-danger btn-sm">🗑️ Delete Car</a>
+          <a href="/retrain" class="btn btn-outline-warning btn-sm">🔁 Retrain Model</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container my-5">
+  <h3 class="text-warning mb-4">❓ Frequently Asked Questions</h3>
+
+  <!-- FAQ Item -->
+  <div class="faq-wrapper mb-3">
+    <div class="faq-question p-3 rounded" style="background-color: #3a3b3c; cursor: pointer;" onclick="toggleFaq(this)">
+      <strong>🚗 What is this car price prediction tool?</strong>
+    </div>
+    <div class="faq-answer p-3 rounded" style="background-color: #2c2d2f; display: none;">
+      This is a machine learning-powered tool that predicts the resale price of a used car based on its model, year, kilometers driven, fuel type, and brand.
+    </div>
+  </div>
+
+  <div class="faq-wrapper mb-3">
+    <div class="faq-question p-3 rounded" style="background-color: #3a3b3c; cursor: pointer;" onclick="toggleFaq(this)">
+      <strong>📊 How accurate is the prediction?</strong>
+    </div>
+    <div class="faq-answer p-3 rounded" style="background-color: #2c2d2f; display: none;">
+      The model uses real-world car data and Random Forest regression, giving an approximate but useful price estimation.
+    </div>
+  </div>
+
+  <div class="faq-wrapper mb-3">
+    <div class="faq-question p-3 rounded" style="background-color: #3a3b3c; cursor: pointer;" onclick="toggleFaq(this)">
+      <strong>➕ Can I add my own car data?</strong>
+    </div>
+    <div class="faq-answer p-3 rounded" style="background-color: #2c2d2f; display: none;">
+      Yes! Use the "Add Car" button on the homepage to input new data. The model will be retrained with your entry.
+    </div>
+  </div>
+
+  <div class="faq-wrapper mb-3">
+    <div class="faq-question p-3 rounded" style="background-color: #3a3b3c; cursor: pointer;" onclick="toggleFaq(this)">
+      <strong>🔁 What does "Retrain Model" do?</strong>
+    </div>
+    <div class="faq-answer p-3 rounded" style="background-color: #2c2d2f; display: none;">
+      It rebuilds the ML model using the updated dataset, improving future predictions with the latest entries.
+    </div>
+  </div>
+</div>
+
+<script>
+  // Car Models Loader by Company
+  const carModelsByCompany = {
+    {% for company in companies %}
+      "{{ company }}": [
+        {% for model in car_models %}
+          {% if company in model %}
+            "{{ model }}",
+          {% endif %}
+        {% endfor %}
+      ],
+    {% endfor %}
+  };
+
+  function load_car_models(company_id, car_model_id) {
+    const companySelect = document.getElementById(company_id);
+    const selectedCompany = companySelect.value;
+    const carModelSelect = document.getElementById(car_model_id);
+
+    // Clear previous models
+    carModelSelect.innerHTML = "";
+
+    if (selectedCompany in carModelsByCompany) {
+      const models = carModelsByCompany[selectedCompany];
+      models.forEach(function (model) {
+        const option = document.createElement("option");
+        option.value = model;
+        option.textContent = model;
+        carModelSelect.appendChild(option);
+      });
+    }
+  }
+
+  // Sidebar Toggle
+  function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("open");
+  }
+
+  // Sidebar Section Collapse Toggle
+  function toggleCollapse(sectionId) {
+    const section = document.getElementById(sectionId);
+    section.style.display = (section.style.display === "block") ? "none" : "block";
+  }
+
+  function toggleFaq(element) {
+    const answer = element.nextElementSibling;
+    if (answer.style.display === "block") {
+      answer.style.display = "none";
+    } else {
+      answer.style.display = "block";
+    }
+  }
+
+  // KMs Slider Value Update
+  function updateKmsValue(val) {
+    const display = document.getElementById('kmsValue');
+    if (display) {
+      display.textContent = parseInt(val).toLocaleString();
+    }
+  }
+
+  // Initialize on page load
+  window.onload = function () {
+    const slider = document.getElementById("kmsSlider");
+    if (slider) {
+      updateKmsValue(slider.value);
+      slider.addEventListener('input', function () {
+        updateKmsValue(this.value);
+      });
+    }
+
+    // Trigger model loading for default selected company (if needed)
+    const companySelect = document.getElementById("company");
+    if (companySelect) {
+      load_car_models('company', 'car_models');
+    }
+  };
+</script>
+
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+</body>
+</html>

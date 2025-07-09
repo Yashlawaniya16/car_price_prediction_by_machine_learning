@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Car Loan Calculator</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body class="bg-dark text-light">
+
+<div class="container mt-5">
+  <h2 class="text-warning text-center">🚗 Car Loan Detail Predictor</h2>
+
+  <form method="POST" class="bg-secondary p-4 rounded shadow mt-4">
+    <div class="form-group">
+      <label>Car Price (₹)</label>
+      <input type="number" step="any" name="car_price" class="form-control" required>
+    </div>
+    <div class="form-group">
+      <label>Down Payment (₹)</label>
+      <input type="number" step="any" name="down_payment" class="form-control" required>
+    </div>
+    <div class="form-group">
+      <label>Interest Rate (%)</label>
+      <input type="number" step="any" name="interest_rate" class="form-control" required>
+    </div>
+    <div class="form-group">
+      <label>Tenure (Years)</label>
+      <input type="number" name="tenure" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-info btn-block">Calculate EMI</button>
+  </form>
+</div>
+
+</body>
+</html>

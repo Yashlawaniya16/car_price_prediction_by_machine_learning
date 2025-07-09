@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Prediction Result</title>
+  <link rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      background-color: #f8f9fa;
+      color: #333;
+      font-family: 'Segoe UI', sans-serif;
+      padding-top: 50px;
+    }
+
+    .result-box {
+      max-width: 900px;
+      margin: auto;
+      padding: 30px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 123, 255, 0.3);
+    }
+
+    .result-box h2 {
+      text-align: center;
+      color: #dc3545;
+      font-weight: bold;
+    }
+
+    .price-info {
+      font-size: 1.2rem;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    #priceChartWrapper {
+      width: 100%;
+      height: 400px;
+      margin-top: 30px;
+    }
+
+    #priceChart {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .btn-predict-again {
+      display: block;
+      margin: 30px auto 0;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    .btn-predict-again:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="result-box">
+    <h2>Predicted Price for {{ car_model }}</h2>
+
+    <div class="price-info">
+      <p>💰 <strong>Estimated Price:</strong> ₹{{ predicted_price }} Lakh</p>
+      <p>📉 <strong>Range:</strong> ₹{{ min_price }} Lakh - ₹{{ max_price }} Lakh</p>
+    </div>
+
+    <div>
+      <p> <strong>Note :</strong> These are indicative prices and depend on the condition of the car. Excellent condition cars may cost more and cars not in good condition may cost less.</p>
+    </div>
+
+    <div id="priceChartWrapper">
+      <canvas id="priceChart"></canvas>
+    </div>
+  </div>
+
+  <script>
+    const ctx = document.getElementById('priceChart').getContext('2d');
+
+    const priceChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Minimum Price', 'Predicted Price', 'Maximum Price'],
+        datasets: [{
+          label: 'Price (₹ in Lakhs)',
+          data: [{{ min_price|float }}, {{ predicted_price|float }}, {{ max_price|float }}],
+          backgroundColor: ['#dc3545', '#007bff', '#28a745']
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: value => '₹' + value + 'L'
+            }
+          }
+        }
+      }
+    });
+  </script>
+
+  <div class="text-center mt-4">
+    <a href="/" class="btn btn-outline-primary btn-sm">🔁 Predict Again</a>
+  </div>
+
+</body>
+</html>
